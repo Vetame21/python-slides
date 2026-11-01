@@ -1,0 +1,299 @@
+<!doctype html>
+<title>Python Unit 1</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one lesson card per screen. Explanation left, runnable code right. */
+:root {
+  --bg: #eaf0f6; --surface: #f8fafc; --ink: #12263f; --muted: #53677d; --line: #c9d6e3;
+  --accent: #27609f; --sun: #ffd43b; --sun-ink: #2a2100;
+  --code-bg: #12263f; --code-ink: #e6eef7;
+  --good: #14765a; --bad: #b83232; --good-bg: #dcf1e9; --bad-bg: #f9e2e2;
+  --display: "Bricolage Grotesque", "Segoe UI", sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0d1724; --surface: #15212f; --ink: #e4edf6; --muted: #98abbf; --line: #2c3c4f;
+  --accent: #82b6ee; --code-bg: #07101b; --code-ink: #e6eef7;
+  --good: #58cda2; --bad: #f28b8b; --good-bg: #123229; --bad-bg: #3a1c1f; color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #0d1724; --surface: #15212f; --ink: #e4edf6; --muted: #98abbf; --line: #2c3c4f;
+  --accent: #82b6ee; --code-bg: #07101b; --code-ink: #e6eef7;
+  --good: #58cda2; --bad: #f28b8b; --good-bg: #123229; --bad-bg: #3a1c1f; color-scheme: dark;
+}
+html, body { height: 100%; }
+body {
+  background: var(--bg); color: var(--ink); font: 17px/1.55 var(--body);
+  display: flex; flex-direction: column; gap: 12px; box-sizing: border-box;
+  padding-block: 14px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+header, main, footer { width: 100%; max-width: 1080px; margin-inline: auto; box-sizing: border-box; }
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.unit { font: 800 18px/1.2 var(--display); flex: 1 1 200px; min-width: 0; }
+.unit small { display: block; font: 400 13px/1.3 var(--body); color: var(--muted); }
+.home { font-size: 14px; color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.lang { display: flex; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.lang button { background: none; border: 0; padding: 4px 12px; font-weight: 700; font-size: 14px; }
+.lang button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.steps { display: flex; gap: 4px; width: 100%; }
+.steps button { flex: 1; height: 12px; min-width: 0; padding: 0; border: 0; border-radius: 2px; background: var(--line); }
+.steps button.seen { background: var(--accent); }
+.steps button.good { background: var(--good); }
+.steps button.bad { background: var(--bad); }
+.steps button.now { outline: 2px solid var(--sun); outline-offset: 1px; }
+main { flex: 1; min-height: 0; overflow-y: auto; }
+.slide { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 28px; padding-block: 12px; }
+.slide.solo { grid-template-columns: minmax(0, 1fr); max-width: 680px; }
+.col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.tag { align-self: flex-start; font: 600 12px/1 var(--mono); letter-spacing: .08em; padding: 5px 8px; background: var(--sun); color: var(--sun-ink); }
+h1 { font: 800 clamp(28px, 4.2vw, 42px)/1.08 var(--display); margin: 0; text-wrap: balance; }
+p { margin: 0; max-width: 65ch; }
+.explain { border-top: 1px solid var(--line); padding-top: 12px; color: var(--muted); }
+.added { font: 600 12px var(--mono); background: var(--sun); color: var(--sun-ink); padding: 1px 5px; }
+.label { font: 600 12px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+pre { margin: 0; padding: 12px 14px; background: var(--code-bg); color: var(--code-ink); font: 400 15px/1.5 var(--mono); overflow-x: auto; white-space: pre; }
+pre.out { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
+.typed { font-size: 14px; color: var(--muted); }
+.pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+.pair > div { min-width: 0; }
+.verdict { font: 600 13px var(--mono); padding: 6px 14px; word-break: break-word; }
+.wrong .verdict { background: var(--bad-bg); color: var(--bad); }
+.right .verdict { background: var(--good-bg); color: var(--good); }
+.check { background: var(--surface); border: 1px solid var(--line); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.check .q { font-weight: 700; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { background: var(--surface); border: 1px solid var(--ink); padding: 7px 14px; font-weight: 700; font-size: 15px; }
+.btn.main { background: var(--ink); color: var(--bg); }
+.btn.on-good { background: var(--good); border-color: var(--good); color: var(--bg); }
+.btn.on-bad { background: var(--bad); border-color: var(--bad); color: var(--bg); }
+.btn:disabled { opacity: .4; cursor: default; }
+.src { font-size: 13px; color: var(--muted); }
+.src a { color: var(--accent); }
+footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.count { font: 400 14px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.score { font: 800 64px/1 var(--display); }
+@media (max-width: 760px) { .slide { grid-template-columns: minmax(0, 1fr); gap: 18px; } body { font-size: 16px; } }
+</style>
+
+<header>
+  <a class="home" id="home" href="../" hidden></a>
+  <div class="unit" id="unit"></div>
+  <div class="lang" role="group" aria-label="Language">
+    <button id="lang-en" type="button">EN</button>
+    <button id="lang-id" type="button">ID</button>
+  </div>
+  <nav class="steps" id="steps" aria-label="Slides"></nav>
+</header>
+<main id="main" tabindex="-1"></main>
+<footer>
+  <button class="btn" id="prev" type="button"></button>
+  <span class="count" id="count"></span>
+  <button class="btn main" id="next" type="button"></button>
+</footer>
+
+<script type="application/json" id="data">[{"chapter": "Unit 1. Variables, types, f-strings, input", "title": "A variable is a name for a value", "tag": "WHAT", "body": "Use = to store a value under a name. Python creates the variable the first time you assign to it, with no separate declare step.", "code": "score = 90\nprint(score)\nscore = 95\nprint(score)", "output": "90\n95", "explain": "Here = means store, not equals. The value on the right goes into the name on the left.", "quick_check": {"q": "After x = 1 and then x = 2, what is x?", "a": "2. The new value replaces the old one."}, "sources": [{"label": "CS50P Week 0 notes", "url": "https://cs50.harvard.edu/python/notes/0/"}, {"label": "W3Schools: variables", "url": "https://www.w3schools.com/python/python_variables.asp"}, {"label": "Python tutorial: introduction", "url": "https://docs.python.org/3.13/tutorial/introduction.html"}], "id": {"chapter": "Unit 1. Variabel, tipe, f-string, input", "title": "Variabel adalah nama untuk sebuah nilai", "body": "Pakai = untuk menyimpan nilai dengan sebuah nama. Python membuat variabel saat pertama kali kamu mengisinya, tanpa langkah deklarasi.", "explain": "Di sini = artinya simpan, bukan sama dengan. Nilai di kanan masuk ke nama di kiri.", "quick_check": {"q": "Setelah x = 1 lalu x = 2, berapa nilai x?", "a": "2. Nilai baru menggantikan nilai lama."}}}, {"chapter": "Unit 1. Variables, types, f-strings, input", "title": "Rules for naming variables", "tag": "REMEMBER", "body": "Names use letters, digits and underscores. They can't start with a digit or be a keyword. Case matters, so score and Score are two different variables.", "wrong_right": {"wrong": "2nd_place = \"Ayu\"\nprint(2nd_place)", "wrong_result": "SyntaxError", "right": "second_place = \"Ayu\"\nprint(second_place)", "right_result": "Ayu", "reason": "A name can't start with a digit."}, "quick_check": {"q": "Is my-name a legal variable name?", "a": "No. A hyphen isn't allowed. Use my_name."}, "sources": [{"label": "W3Schools: variable names", "url": "https://www.w3schools.com/python/python_variables_names.asp"}, {"label": "GeeksforGeeks: variables", "url": "https://www.geeksforgeeks.org/python/python-variables/"}], "id": {"chapter": "Unit 1. Variabel, tipe, f-string, input", "title": "Aturan memberi nama variabel", "body": "Nama memakai huruf, angka dan garis bawah. Nama tidak boleh diawali angka atau berupa keyword. Huruf besar berpengaruh, jadi score dan Score adalah dua variabel berbeda.", "wrong_right_reason": "Nama tidak boleh diawali angka.", "quick_check": {"q": "Apakah my-name boleh jadi nama variabel?", "a": "Tidak. Tanda hubung tidak boleh. Pakai my_name."}}}, {"chapter": "Unit 1. Variables, types, f-strings, input", "title": "Three basic types", "tag": "WHAT", "body": "str is text, int is a whole number, and float is a number with a decimal point. type() tells you which one a value is.", "code": "print(type(\"20\"))\nprint(type(20))\nprint(type(20.0))", "output": "<class 'str'>\n<class 'int'>\n<class 'float'>", "explain": "Quotes make a value text. \"20\" looks like a number, but Python treats it as text.", "quick_check": {"q": "What is the type of \"20\"?", "a": "str, because it is in quotes."}, "sources": [{"label": "CS50P Week 0 notes", "url": "https://cs50.harvard.edu/python/notes/0/"}, {"label": "W3Schools: variables", "url": "https://www.w3schools.com/python/python_variables.asp"}, {"label": "Python docs: built-in functions", "url": "https://docs.python.org/3.13/library/functions.html"}], "id": {"chapter": "Unit 1. Variabel, tipe, f-string, input", "title": "Tiga tipe dasar", "body": "str adalah teks, int adalah bilangan bulat, dan float adalah bilangan dengan titik desimal. type() memberi tahu tipe sebuah nilai.", "explain": "Tanda kutip membuat nilai menjadi teks. \"20\" terlihat seperti angka, tapi bagi Python itu teks.", "quick_check": {"q": "Apa tipe dari \"20\"?", "a": "str, karena ada di dalam tanda kutip."}}}, {"chapter": "Unit 1. Variables, types, f-strings, input", "title": "input always gives you text", "tag": "WHY", "body": "input() pauses the program and waits for the user. It returns what they typed as a str, even when they type digits. Convert it before doing math.", "input": ["1", "2"], "explain": "In int(input()), the inner call runs first. input() gets the text, then int() converts it.", "wrong_right": {"wrong": "a = input()\nb = input()\nprint(a + b)", "wrong_result": "12", "right": "a = int(input())\nb = int(input())\nprint(a + b)", "right_result": "3", "reason": "With two strings, + joins them instead of adding."}, "quick_check": {"q": "The user types 7. What type does input() return?", "a": "str. It returns the text \"7\", not the number 7."}, "sources": [{"label": "CS50P Week 0 notes", "url": "https://cs50.harvard.edu/python/notes/0/"}, {"label": "W3Schools: user input", "url": "https://www.w3schools.com/python/python_user_input.asp"}, {"label": "GeeksforGeeks: taking input", "url": "https://www.geeksforgeeks.org/python/taking-input-in-python/"}, {"label": "Python docs: built-in functions", "url": "https://docs.python.org/3.13/library/functions.html"}], "id": {"chapter": "Unit 1. Variabel, tipe, f-string, input", "title": "input selalu memberi teks", "body": "input() menghentikan program dan menunggu pengguna. Hasilnya berupa str, walaupun yang diketik angka. Ubah dulu sebelum berhitung.", "explain": "Pada int(input()), yang di dalam jalan lebih dulu. input() mengambil teks, lalu int() mengubahnya.", "wrong_right_reason": "Pada dua string, + menggabungkan, bukan menjumlahkan.", "quick_check": {"q": "Pengguna mengetik 7. Tipe apa yang dikembalikan input()?", "a": "str. Hasilnya teks \"7\", bukan angka 7."}}}, {"chapter": "Unit 1. Variables, types, f-strings, input", "title": "Convert with int, float and str", "tag": "HOW", "body": "int() makes a whole number, float() makes a decimal number, and str() makes text. A string must look like the number you ask for.", "code": "print(int(\"3\"))\nprint(float(\"4.5\"))\nprint(str(10))\nprint(int(2.8))", "output": "3\n4.5\n10\n2", "explain": "int() drops the decimals. It doesn't round, so int(2.8) is 2, not 3.", "wrong_right": {"wrong": "print(int(\"abc\"))", "wrong_result": "ValueError", "right": "print(int(\"123\"))", "right_result": "123", "reason": "\"abc\" isn't a whole number, so int() can't convert it."}, "quick_check": {"q": "What is int(9.9)?", "a": "9. The decimals are dropped."}, "sources": [{"label": "W3Schools: casting", "url": "https://www.w3schools.com/python/python_casting.asp"}, {"label": "Python docs: built-in functions", "url": "https://docs.python.org/3.13/library/functions.html"}, {"label": "GeeksforGeeks: taking input", "url": "https://www.geeksforgeeks.org/python/taking-input-in-python/"}], "id": {"chapter": "Unit 1. Variabel, tipe, f-string, input", "title": "Ubah tipe dengan int, float dan str", "body": "int() membuat bilangan bulat, float() membuat bilangan desimal, dan str() membuat teks. String harus berbentuk angka yang kamu minta.", "explain": "int() membuang desimal. Tidak dibulatkan, jadi int(2.8) hasilnya 2, bukan 3.", "wrong_right_reason": "\"abc\" bukan bilangan bulat, jadi int() tidak bisa mengubahnya.", "quick_check": {"q": "Berapa hasil int(9.9)?", "a": "9. Desimalnya dibuang."}}}, {"chapter": "Unit 1. Variables, types, f-strings, input", "title": "Text and numbers don't add", "tag": "WHY", "body": "+ adds numbers and joins strings. It can't do both at once, so a string plus a number is an error.", "wrong_right": {"wrong": "age = 20\nprint(\"Age: \" + age)", "wrong_result": "TypeError", "right": "age = 20\nprint(f\"Age: {age}\")", "right_result": "Age: 20", "reason": "A str and an int can't be joined with +."}, "quick_check": {"q": "What is \"5\" + \"5\"?", "a": "\"55\". Two strings are joined."}, "sources": [{"label": "W3Schools: format strings", "url": "https://www.w3schools.com/python/python_strings_format.asp"}, {"label": "CS50P Week 0 notes", "url": "https://cs50.harvard.edu/python/notes/0/"}], "id": {"chapter": "Unit 1. Variabel, tipe, f-string, input", "title": "Teks dan angka tidak bisa dijumlahkan", "body": "+ menjumlahkan angka dan menggabungkan string. Keduanya tidak bisa sekaligus, jadi string ditambah angka menjadi error.", "wrong_right_reason": "str dan int tidak bisa digabung dengan +.", "quick_check": {"q": "Berapa hasil \"5\" + \"5\"?", "a": "\"55\". Dua string digabung."}}}, {"chapter": "Unit 1. Variables, types, f-strings, input", "title": "f-strings put values inside text", "tag": "HOW", "body": "Put f before the opening quote, then write a name or expression inside { }. Python inserts its value into the text.", "code": "name = \"Ayu\"\nage = 19\nprint(f\"{name} is {age}\")\nprint(f\"In 2 years: {age + 2}\")", "output": "Ayu is 19\nIn 2 years: 21", "wrong_right": {"wrong": "name = \"Budi\"\nprint(\"Hi {name}\")", "wrong_result": "Hi {name}", "right": "name = \"Budi\"\nprint(f\"Hi {name}\")", "right_result": "Hi Budi", "reason": "Without the f, the braces are plain text."}, "quick_check": {"q": "What does print(f\"{2 + 3}\") show?", "a": "5. The expression runs first."}, "sources": [{"label": "CS50P Week 0 notes", "url": "https://cs50.harvard.edu/python/notes/0/"}, {"label": "Python tutorial: input and output", "url": "https://docs.python.org/3.13/tutorial/inputoutput.html"}, {"label": "W3Schools: format strings", "url": "https://www.w3schools.com/python/python_strings_format.asp"}], "id": {"chapter": "Unit 1. Variabel, tipe, f-string, input", "title": "f-string memasukkan nilai ke dalam teks", "body": "Tulis f sebelum tanda kutip pembuka, lalu tulis nama atau ekspresi di dalam { }. Python memasukkan nilainya ke dalam teks.", "wrong_right_reason": "Tanpa f, kurung kurawal hanya teks biasa.", "quick_check": {"q": "Apa yang ditampilkan print(f\"{2 + 3}\")?", "a": "5. Ekspresinya dijalankan dulu."}}}, {"chapter": "Unit 1. Variables, types, f-strings, input", "title": "Control decimals with :.2f", "tag": "HOW", "body": "After a colon inside { }, you can set the format. .2f shows exactly 2 digits after the decimal point, and .1f shows exactly 1.", "code": "pi = 3.14159\nprint(f\"{pi:.2f}\")\nprint(f\"{pi:.1f}\")\nprint(f\"{5.0:.2f}\")", "output": "3.14\n3.1\n5.00", "explain": "\"Exactly\" means it adds zeros when needed, which is why 5.0 prints as 5.00.", "quick_check": {"q": "What does f\"{2.5:.2f}\" give?", "a": "2.50"}, "sources": [{"label": "Python docs: format specification", "url": "https://docs.python.org/3.13/library/string.html"}, {"label": "Python tutorial: input and output", "url": "https://docs.python.org/3.13/tutorial/inputoutput.html"}, {"label": "CS50P Week 0 notes", "url": "https://cs50.harvard.edu/python/notes/0/"}, {"label": "W3Schools: format strings", "url": "https://www.w3schools.com/python/python_strings_format.asp"}], "id": {"chapter": "Unit 1. Variabel, tipe, f-string, input", "title": "Atur desimal dengan :.2f", "body": "Setelah titik dua di dalam { }, kamu bisa mengatur format. .2f menampilkan tepat 2 angka di belakang titik, dan .1f tepat 1 angka.", "explain": "\"Tepat\" artinya ditambah nol kalau perlu, makanya 5.0 tampil sebagai 5.00.", "quick_check": {"q": "Apa hasil f\"{2.5:.2f}\"?", "a": "2.50"}}}, {"chapter": "Unit 1. Variables, types, f-strings, input", "title": "Three ways to divide", "tag": "WHAT", "body": "/ always gives a float, even when the answer is whole. // gives the whole part of the result. % gives the remainder.", "code": "print(7 / 2)\nprint(8 / 2)\nprint(7 // 2)\nprint(7 % 2)", "output": "3.5\n4.0\n3\n1", "explain": "8 / 2 is 4.0, not 4. Use // when you need an int.", "quick_check": {"q": "What are 17 // 5 and 17 % 5?", "a": "3 and 2. 5 fits into 17 three times, with 2 left."}, "sources": [{"label": "Python tutorial: introduction", "url": "https://docs.python.org/3.13/tutorial/introduction.html"}, {"label": "GeeksforGeeks: arithmetic operators", "url": "https://www.geeksforgeeks.org/python/python-arithmetic-operators/"}], "id": {"chapter": "Unit 1. Variabel, tipe, f-string, input", "title": "Tiga cara membagi", "body": "/ selalu menghasilkan float, walaupun hasilnya bulat. // memberi bagian bulat dari hasil. % memberi sisa bagi.", "explain": "8 / 2 hasilnya 4.0, bukan 4. Pakai // kalau kamu butuh int.", "quick_check": {"q": "Berapa hasil 17 // 5 dan 17 % 5?", "a": "3 dan 2. 17 memuat 5 sebanyak tiga kali, sisa 2."}}}, {"chapter": "Unit 1. Variables, types, f-strings, input", "title": "// rounds down, not toward zero", "tag": "REMEMBER", "body": "// always rounds down to the lower whole number. With positive numbers you won't notice, but with negative numbers the result surprises people.", "code": "print(5 // 2)\nprint(-5 // 2)", "output": "2\n-3", "explain": "-5 / 2 is -2.5. The lower whole number is -3, not -2.", "quick_check": {"q": "What is -7 // 2?", "a": "-4. -3.5 rounds down to -4."}, "sources": [{"label": "GeeksforGeeks: arithmetic operators", "url": "https://www.geeksforgeeks.org/python/python-arithmetic-operators/"}, {"label": "Python docs: built-in functions", "url": "https://docs.python.org/3.13/library/functions.html"}], "id": {"chapter": "Unit 1. Variabel, tipe, f-string, input", "title": "// membulatkan ke bawah, bukan ke nol", "body": "// selalu membulatkan ke bilangan bulat yang lebih kecil. Pada angka positif tidak terasa, tapi pada angka negatif hasilnya sering mengejutkan.", "explain": "-5 / 2 adalah -2.5. Bilangan bulat yang lebih kecil adalah -3, bukan -2.", "quick_check": {"q": "Berapa hasil -7 // 2?", "a": "-4. -3.5 dibulatkan ke bawah menjadi -4."}}}, {"chapter": "Unit 1. Variables, types, f-strings, input", "title": "Python's order of operations", "tag": "REMEMBER", "body": "Parentheses come first, then **, then * / // %, then + and -. Operators on the same level run left to right.", "code": "print(2 + 3 * 4)\nprint((2 + 3) * 4)\nprint(2 ** 3)", "output": "14\n20\n8", "wrong_right": {"wrong": "a = 80\nb = 90\nprint(a + b / 2)", "wrong_result": "125.0", "right": "a = 80\nb = 90\nprint((a + b) / 2)", "right_result": "85.0", "reason": "/ runs before +, so the average needs parentheses."}, "quick_check": {"q": "What is 2 + 3 * 4?", "a": "14. The * runs first."}, "sources": [{"label": "Python docs: expressions", "url": "https://docs.python.org/3.13/reference/expressions.html"}, {"label": "GeeksforGeeks: arithmetic operators", "url": "https://www.geeksforgeeks.org/python/python-arithmetic-operators/"}], "id": {"chapter": "Unit 1. Variabel, tipe, f-string, input", "title": "Urutan operasi Python", "body": "Tanda kurung dulu, lalu **, lalu * / // %, lalu + dan -. Operator pada tingkat yang sama berjalan dari kiri ke kanan.", "wrong_right_reason": "/ jalan sebelum +, jadi rata-rata butuh tanda kurung.", "quick_check": {"q": "Berapa hasil 2 + 3 * 4?", "a": "14. Tanda * jalan lebih dulu."}}}, {"chapter": "Unit 1. Variables, types, f-strings, input", "title": "Three errors you'll meet first", "tag": "REMEMBER", "body": "NameError: the name has no value yet. TypeError: the operation doesn't work on these types. ValueError: the type is fine, but the value can't be converted.", "explain": "[ADDED] Read the last line of an error first. It names the error type and says what went wrong.", "wrong_right": {"wrong": "print(total)", "wrong_result": "NameError", "right": "total = 5\nprint(total)", "right_result": "5", "reason": "Assign a value to a name before you use it."}, "quick_check": {"q": "Which error does int(\"hi\") raise?", "a": "ValueError"}, "sources": [{"label": "Python tutorial: introduction", "url": "https://docs.python.org/3.13/tutorial/introduction.html"}, {"label": "W3Schools: format strings", "url": "https://www.w3schools.com/python/python_strings_format.asp"}, {"label": "GeeksforGeeks: taking input", "url": "https://www.geeksforgeeks.org/python/taking-input-in-python/"}], "id": {"chapter": "Unit 1. Variabel, tipe, f-string, input", "title": "Tiga error yang pertama kamu temui", "body": "NameError: nama belum punya nilai. TypeError: operasinya tidak cocok dengan tipenya. ValueError: tipenya benar, tapi nilainya tidak bisa diubah.", "explain": "[ADDED] Baca baris terakhir error lebih dulu. Di situ tertulis jenis error dan masalahnya.", "wrong_right_reason": "Isi nilai ke sebuah nama sebelum memakainya.", "quick_check": {"q": "Error apa yang muncul dari int(\"hi\")?", "a": "ValueError"}}}]</script>
+<script>
+const SLIDES = JSON.parse(document.getElementById("data").textContent);
+const UNIT = 1;
+const KEY = "python-unit-" + UNIT;
+const UI = {
+  en: { prev: "Back", next: "Next", finish: "Finish", show: "Show answer", got: "I got it", miss: "Review this",
+        code: "Code", output: "Output", typed: "Typed:", wrong: "Wrong", right: "Right", check: "Quick check",
+        result: "Result:", sources: "Sources:", done: "Unit finished", correct: "quick checks correct",
+        review: "Review these slides:", none: "Nothing to review. Nice work.",
+        nextStep: "Next, solve this unit's problems.", again: "Start over", home: "All units" },
+  id: { prev: "Kembali", next: "Lanjut", finish: "Selesai", show: "Lihat jawaban", got: "Aku paham", miss: "Ulangi ini",
+        code: "Kode", output: "Hasil", typed: "Diketik:", wrong: "Salah", right: "Benar", check: "Cek cepat",
+        result: "Hasil:", sources: "Sumber:", done: "Unit selesai", correct: "cek cepat benar",
+        review: "Ulangi slide ini:", none: "Tidak ada yang perlu diulang. Mantap.",
+        nextStep: "Sekarang kerjakan soal unit ini.", again: "Mulai lagi", home: "Semua unit" }
+};
+
+let state = { at: 0, lang: "en", marks: {} };
+try { state = Object.assign(state, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
+const shown = {};
+if (!(state.at >= 0 && state.at <= SLIDES.length)) state.at = 0;
+
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+function ui(name) { return UI[state.lang][name]; }
+function text(slide, field) {
+  return state.lang === "id" ? slide.id[field] : slide[field];
+}
+function el(tag, cls, content) {
+  const node = document.createElement(tag);
+  if (cls) node.className = cls;
+  if (content !== undefined) node.textContent = content;
+  return node;
+}
+function para(value, cls) {
+  const node = el("p", cls);
+  const parts = value.split("[ADDED]");
+  parts.forEach((part, index) => {
+    if (index) node.append(el("span", "added", "ADDED"));
+    node.append(part);
+  });
+  return node;
+}
+function block(label, code, cls) {
+  const box = el("div");
+  box.append(el("div", "label", label), el("pre", cls, code));
+  return box;
+}
+function pairSide(kind, code, result) {
+  const box = el("div", kind);
+  const pre = el("pre", "", code);
+  pre.tabIndex = 0;
+  box.append(el("div", "label", ui(kind)), pre, el("div", "verdict", ui("result") + " " + result));
+  return box;
+}
+
+function quickCheck(slide, index) {
+  const box = el("div", "check");
+  const qc = text(slide, "quick_check");
+  box.append(el("div", "label", ui("check")), el("div", "q", qc.q));
+  if (!shown[index] && !state.marks[index]) {
+    const show = el("button", "btn", ui("show"));
+    show.type = "button";
+    show.onclick = () => { shown[index] = true; render(); };
+    box.append(show);
+    return box;
+  }
+  box.append(el("p", "", qc.a));
+  const row = el("div", "row");
+  [["got", "good", "on-good"], ["miss", "bad", "on-bad"]].forEach(([word, mark, cls]) => {
+    const pick = el("button", "btn" + (state.marks[index] === mark ? " " + cls : ""), ui(word));
+    pick.type = "button";
+    pick.setAttribute("aria-pressed", String(state.marks[index] === mark));
+    pick.onclick = () => { state.marks[index] = mark; save(); render(); };
+    row.append(pick);
+  });
+  box.append(row);
+  return box;
+}
+
+function slideView(slide, index) {
+  const hasCode = slide.code || slide.wrong_right;
+  const page = el("article", "slide" + (hasCode ? "" : " solo"));
+  const left = el("div", "col");
+  left.append(el("span", "tag", slide.tag), el("h1", "", text(slide, "title")), para(text(slide, "body")));
+  if (slide.explain) left.append(para(text(slide, "explain"), "explain"));
+  left.append(quickCheck(slide, index));
+  const src = el("p", "src", ui("sources") + " ");
+  slide.sources.forEach((source, at) => {
+    const link = el("a", "", source.label);
+    link.href = source.url;
+    link.target = "_blank";
+    link.rel = "noopener";
+    if (at) src.append(", ");
+    src.append(link);
+  });
+  left.append(src);
+  page.append(left);
+  if (!hasCode) return page;
+
+  const right = el("div", "col");
+  if (slide.code) {
+    right.append(block(ui("code"), slide.code), block(ui("output"), slide.output, "out"));
+  }
+  if (slide.input) right.append(el("div", "typed", ui("typed") + " " + slide.input.join(", ")));
+  const pair = slide.wrong_right;
+  if (pair) {
+    const both = el("div", "pair");
+    both.append(pairSide("wrong", pair.wrong, pair.wrong_result), pairSide("right", pair.right, pair.right_result));
+    right.append(both, el("p", "", state.lang === "id" ? slide.id.wrong_right_reason : pair.reason));
+  }
+  page.append(right);
+  return page;
+}
+
+function endView() {
+  const page = el("article", "slide solo");
+  const col = el("div", "col");
+  const good = SLIDES.filter((_, index) => state.marks[index] === "good").length;
+  col.append(el("h1", "", ui("done")), el("div", "score", good + " / " + SLIDES.length), el("p", "", ui("correct")));
+  const missed = SLIDES.map((slide, index) => [slide, index]).filter(([, index]) => state.marks[index] !== "good");
+  if (!missed.length) col.append(el("p", "", ui("none")));
+  else {
+    col.append(el("p", "", ui("review")));
+    const row = el("div", "row");
+    missed.forEach(([slide, index]) => {
+      const jump = el("button", "btn", (index + 1) + ". " + text(slide, "title"));
+      jump.type = "button";
+      jump.onclick = () => go(index);
+      row.append(jump);
+    });
+    col.append(row);
+  }
+  col.append(el("p", "", ui("nextStep")));
+  const again = el("button", "btn", ui("again"));
+  again.type = "button";
+  again.onclick = () => {
+    state.marks = {};
+    Object.keys(shown).forEach((key) => delete shown[key]);
+    go(0);
+  };
+  col.append(again);
+  page.append(col);
+  return page;
+}
+
+function render() {
+  const at = state.at;
+  document.documentElement.lang = state.lang;
+  const home = document.getElementById("home");
+  home.textContent = ui("home");
+  home.hidden = !location.protocol.startsWith("http");
+  const unit = document.getElementById("unit");
+  unit.textContent = "Python";
+  unit.append(el("small", "", text(SLIDES[0], "chapter")));
+  ["en", "id"].forEach((code) => {
+    const btn = document.getElementById("lang-" + code);
+    btn.setAttribute("aria-pressed", String(state.lang === code));
+    btn.onclick = () => { state.lang = code; save(); render(); };
+  });
+  const steps = document.getElementById("steps");
+  steps.replaceChildren();
+  SLIDES.forEach((slide, index) => {
+    const step = el("button");
+    step.type = "button";
+    step.setAttribute("aria-label", (index + 1) + ". " + text(slide, "title"));
+    step.title = text(slide, "title");
+    const mark = state.marks[index];
+    step.className = (mark || (index < at ? "seen" : "")) + (index === at ? " now" : "");
+    step.onclick = () => go(index);
+    steps.append(step);
+  });
+  const main = document.getElementById("main");
+  main.replaceChildren(at < SLIDES.length ? slideView(SLIDES[at], at) : endView());
+  const prev = document.getElementById("prev");
+  const next = document.getElementById("next");
+  prev.textContent = ui("prev");
+  prev.disabled = at === 0;
+  next.textContent = at === SLIDES.length - 1 ? ui("finish") : ui("next");
+  next.hidden = at === SLIDES.length;
+  document.getElementById("count").textContent = at < SLIDES.length ? (at + 1) + " / " + SLIDES.length : "";
+}
+
+function go(index) {
+  state.at = Math.max(0, Math.min(SLIDES.length, index));
+  save();
+  render();
+  document.getElementById("main").scrollTop = 0;
+}
+document.getElementById("prev").onclick = () => go(state.at - 1);
+document.getElementById("next").onclick = () => go(state.at + 1);
+document.addEventListener("keydown", (event) => {
+  if (event.key === "ArrowRight") go(state.at + 1);
+  if (event.key === "ArrowLeft") go(state.at - 1);
+});
+render();
+</script>
