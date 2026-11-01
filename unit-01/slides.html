@@ -71,7 +71,7 @@ pre.out { background: var(--surface); color: var(--ink); border: 1px solid var(-
 .check { background: var(--surface); border: 1px solid var(--line); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
 .check .q { font-weight: 700; }
 .row { display: flex; flex-wrap: wrap; gap: 8px; }
-.btn { background: var(--surface); border: 1px solid var(--ink); padding: 7px 14px; font-weight: 700; font-size: 15px; }
+.btn { background: var(--surface); border: 1px solid var(--ink); padding: 7px 14px; font-weight: 700; font-size: 15px; align-self: flex-start; text-decoration: none; }
 .btn.main { background: var(--ink); color: var(--bg); }
 .btn.on-good { background: var(--good); border-color: var(--good); color: var(--bg); }
 .btn.on-bad { background: var(--bad); border-color: var(--bad); color: var(--bg); }
@@ -110,12 +110,12 @@ const UI = {
         code: "Code", output: "Output", typed: "Typed:", wrong: "Wrong", right: "Right", check: "Quick check",
         result: "Result:", sources: "Sources:", done: "Unit finished", correct: "quick checks correct",
         review: "Review these slides:", none: "Nothing to review. Nice work.",
-        nextStep: "Next, solve this unit's problems.", again: "Start over", home: "All units" },
+        nextStep: "Next, solve this unit's problems.", again: "Start over", home: "All units", problems: "Open the problems" },
   id: { prev: "Kembali", next: "Lanjut", finish: "Selesai", show: "Lihat jawaban", got: "Aku paham", miss: "Ulangi ini",
         code: "Kode", output: "Hasil", typed: "Diketik:", wrong: "Salah", right: "Benar", check: "Cek cepat",
         result: "Hasil:", sources: "Sumber:", done: "Unit selesai", correct: "cek cepat benar",
         review: "Ulangi slide ini:", none: "Tidak ada yang perlu diulang. Mantap.",
-        nextStep: "Sekarang kerjakan soal unit ini.", again: "Mulai lagi", home: "Semua unit" }
+        nextStep: "Sekarang kerjakan soal unit ini.", again: "Mulai lagi", home: "Semua unit", problems: "Buka soal" }
 };
 
 let state = { at: 0, lang: "en", marks: {} };
@@ -234,6 +234,9 @@ function endView() {
     col.append(row);
   }
   col.append(el("p", "", ui("nextStep")));
+  const problems = el("a", "btn main", ui("problems"));
+  problems.href = "problems.html";
+  col.append(problems);
   const again = el("button", "btn", ui("again"));
   again.type = "button";
   again.onclick = () => {
