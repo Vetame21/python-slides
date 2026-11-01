@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<title>Python Unit 8 Problems</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<style>
+/* Layout: problem steps on top, statement left, editor and results right. */
+:root {
+  --bg: #eaf0f6; --surface: #f8fafc; --ink: #12263f; --muted: #53677d; --line: #c9d6e3;
+  --accent: #27609f; --sun: #ffd43b; --sun-ink: #2a2100;
+  --code-bg: #12263f; --code-ink: #e6eef7; --code-muted: #8fa6bd; --code-word: #ffd43b; --code-text: #9fd3a8;
+  --easy: #14765a; --medium: #8a6100; --hard: #b83232; --good-bg: #dcf1e9; --bad-bg: #f9e2e2;
+}
+@media (prefers-color-scheme: dark) { :root {
+  --bg: #0d1724; --surface: #15212f; --ink: #e4edf6; --muted: #98abbf; --line: #2c3c4f;
+  --accent: #82b6ee; --code-bg: #07101b;
+  --easy: #58cda2; --medium: #f0c34e; --hard: #f28b8b; --good-bg: #123229; --bad-bg: #3a1c1f; color-scheme: dark;
+} }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 17px/1.55 "Atkinson Hyperlegible", "Segoe UI", sans-serif;
+  padding: 20px max(16px, env(safe-area-inset-right, 0px)) 40px max(16px, env(safe-area-inset-left, 0px));
+}
+main { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+nav { display: flex; flex-wrap: wrap; gap: 16px; font-size: 14px; }
+nav a { color: var(--accent); }
+h1 { font: 800 clamp(26px, 5vw, 36px)/1.1 "Bricolage Grotesque", "Segoe UI", sans-serif; margin: 0; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px; }
+.step { display: flex; align-items: center; gap: 8px; padding: 8px 10px; min-width: 0; text-align: left; background: var(--surface); border: 1px solid var(--line); }
+.step[aria-current="step"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.step:disabled { opacity: .55; cursor: not-allowed; }
+.num { font: 600 13px "JetBrains Mono", Consolas, monospace; padding: 3px 7px; background: var(--sun); color: var(--sun-ink); }
+.step-text { min-width: 0; display: flex; flex-direction: column; font-size: 13px; line-height: 1.25; }
+.step-text small { color: var(--muted); }
+.step.solved .num { background: var(--easy); color: var(--bg); }
+.work { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 20px; }
+.col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+h2 { font: 800 26px/1.15 "Bricolage Grotesque", "Segoe UI", sans-serif; margin: 0; }
+.level { font: 600 13px "JetBrains Mono", Consolas, monospace; }
+.easy { color: var(--easy); } .medium { color: var(--medium); } .hard { color: var(--hard); }
+pre { margin: 0; font: 400 14px/1.6 "JetBrains Mono", Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+.statement { padding: 14px; background: var(--surface); border: 1px solid var(--line); }
+.editor { border: 1px solid var(--line); }
+.CodeMirror { height: 280px; background: var(--code-bg); color: var(--code-ink); font: 400 15px/1.5 "JetBrains Mono", Consolas, monospace; }
+.CodeMirror-gutters { background: var(--code-bg); border-right: 1px solid var(--code-muted); }
+.CodeMirror-linenumber { color: var(--code-muted); }
+.CodeMirror-cursor { border-left-color: var(--code-ink); }
+.CodeMirror-selected, .CodeMirror-focused .CodeMirror-selected { background: #3a5a80; }
+.cm-s-default .cm-keyword, .cm-s-default .cm-builtin { color: var(--code-word); }
+.cm-s-default .cm-string, .cm-s-default .cm-number { color: var(--code-text); }
+.cm-s-default .cm-comment { color: var(--code-muted); }
+.cm-s-default .cm-variable, .cm-s-default .cm-variable-2, .cm-s-default .cm-def, .cm-s-default .cm-operator { color: var(--code-ink); }
+#source { width: 100%; height: 280px; box-sizing: border-box; border: 0; padding: 10px; background: var(--code-bg); color: var(--code-ink); font: 400 15px/1.5 "JetBrains Mono", Consolas, monospace; }
+label { font: 600 12px "JetBrains Mono", Consolas, monospace; letter-spacing: .05em; color: var(--muted); }
+#lines { width: 100%; height: 58px; box-sizing: border-box; margin-top: 4px; padding: 6px 8px; background: var(--surface); color: var(--ink); border: 1px solid var(--line); font: 400 14px/1.4 "JetBrains Mono", Consolas, monospace; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.btn { background: var(--surface); border: 1px solid var(--ink); padding: 7px 16px; font-weight: 700; font-size: 15px; }
+.btn.main { background: var(--ink); color: var(--bg); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.status { font-size: 14px; color: var(--muted); }
+.result { padding: 12px 14px; border: 1px solid var(--line); background: var(--surface); }
+.result.pass { background: var(--good-bg); border-color: var(--easy); }
+.result.fail { background: var(--bad-bg); border-color: var(--hard); }
+.result b { display: block; margin-bottom: 4px; }
+.detail { font: 600 12px "JetBrains Mono", Consolas, monospace; color: var(--muted); margin-top: 8px; }
+.result a { color: var(--accent); }
+pre, .CodeMirror, textarea { font-variant-ligatures: none; }
+@media (max-width: 800px) { .work { grid-template-columns: minmax(0, 1fr); } .CodeMirror, #source { height: 220px; } }
+</style>
+<main>
+  <nav><a href="../">All units</a> </nav>
+  <h1>Unit 8 problems</h1>
+  <div class="steps" id="steps"></div>
+  <div class="work">
+    <div class="col">
+      <div><span class="level" id="level"></span><h2 id="title"></h2></div>
+      <pre class="statement" id="statement"></pre>
+    </div>
+    <div class="col">
+      <div class="editor"><textarea id="source" aria-label="Your code" spellcheck="false"></textarea></div>
+      <div>
+        <label for="lines">INPUT FOR RUN, ONE VALUE PER LINE</label>
+        <textarea id="lines" spellcheck="false"></textarea>
+      </div>
+      <div class="row">
+        <button class="btn" id="run" type="button" disabled>Run</button>
+        <button class="btn main" id="check" type="button" disabled>Check</button>
+        <button class="btn" id="next" type="button" disabled>Next problem</button>
+        <span class="status" id="status" role="status"></span>
+      </div>
+      <div id="result" aria-live="polite"></div>
+    </div>
+  </div>
+</main>
+
+<script type="application/json" id="data">[{"number": "1", "title": "Predict the Shared List", "level": "Easy", "text": "Read the code in the comment and work out what a holds at the end, without\nrunning it. Set answer to that list.\n\n  a = [1, 2]\n  b = a\n  b.append(3)\n  c = a[:]\n  c.append(4)\n\nHint: = gives a second name to one list. [:] makes a new list.", "match": "exact", "cases": [{"code": "answer", "expected": "[1, 2, 3]"}], "starter": "answer = []\n"}, {"number": "2", "title": "Copy a List Safely", "level": "Medium", "text": "Write with_item(items, item). Return a new list with the item added at the\nend. The original list must not change.\n\nExample 1:\n  >>> with_item([1], 2)\n  [1, 2]\n\nExample 2:\n  >>> a = [1]\n  >>> with_item(a, 2)\n  >>> a\n  [1]\n\nHint: append changes the original list.", "match": "exact", "cases": [{"code": "with_item([1], 2)", "expected": "[1, 2]"}, {"code": "a = [1]\nwith_item(a, 2)\na", "expected": "[1]"}, {"code": "a = []\nwith_item(a, 1) is a", "expected": "False"}]}, {"number": "3", "title": "Fix the Mutable Default", "level": "Medium", "text": "Every call to add_tag should start with a new list unless a list is passed\nin. Right now tags leak between calls. Fix it.\n\nExample 1:\n  >>> add_tag(\"a\")\n  ['a']\n\nExample 2:\n  >>> add_tag(\"a\")\n  >>> add_tag(\"b\")\n  ['b']\n\nHint: A default value is created once, when def runs. None is a safe default.", "match": "exact", "cases": [{"code": "add_tag(\"a\")", "expected": "['a']"}, {"code": "add_tag(\"a\")\nadd_tag(\"b\")", "expected": "['b']"}, {"code": "t = [\"x\"]\nadd_tag(\"y\", t)", "expected": "['x', 'y']"}], "starter": "def add_tag(tag, tags=[]):\n    tags.append(tag)\n    return tags\n"}, {"number": "4", "title": "Deep Copy Nested Data", "level": "Hard", "text": "Write deep_copy(data) without the copy module. data is made of lists, dicts\nand simple values, nested to any depth. Changing the copy must never change\nthe original.\n\nExample 1:\n  >>> deep_copy([1, [2, 3]])\n  [1, [2, 3]]\n\nExample 2:\n  >>> a = {\"x\": [1]}\n  >>> b = deep_copy(a)\n  >>> b[\"x\"].append(2)\n  >>> a\n  {'x': [1]}", "match": "exact", "cases": [{"code": "deep_copy([1, [2, 3]])", "expected": "[1, [2, 3]]"}, {"code": "a = {\"x\": [1]}\nb = deep_copy(a)\nb[\"x\"].append(2)\na", "expected": "{'x': [1]}"}, {"code": "a = [[[1]]]\nb = deep_copy(a)\nb[0][0].append(2)\na", "expected": "[[[1]]]"}, {"code": "a = [{\"k\": [1]}]\nb = deep_copy(a)\nb[0][\"k\"].append(2)\na", "expected": "[{'k': [1]}]"}, {"code": "deep_copy(\"text\")", "expected": "'text'"}], "rules": [{"nodes": ["Import", "ImportFrom"], "message": "No imports."}]}, {"number": "5", "title": "Undo History", "level": "Hard", "text": "Build an editor history with plain functions. history is a list of saved\nstates, and each state is a list of words. save(history, words) stores the\ncurrent words. undo(history) removes the newest state and returns the one\nbefore it, or [] if none is left. Later changes to words must never change\nsaved states.\n\nExample 1:\n  >>> h = []\n  >>> save(h, [\"a\"])\n  >>> h\n  [['a']]\n\nExample 2:\n  >>> h = []\n  >>> w = [\"a\"]\n  >>> save(h, w)\n  >>> w.append(\"b\")\n  >>> save(h, w)\n  >>> undo(h)\n  ['a']", "match": "exact", "cases": [{"code": "h = []\nsave(h, [\"a\"])\nh", "expected": "[['a']]"}, {"code": "h = []\nw = [\"a\"]\nsave(h, w)\nw.append(\"b\")\nsave(h, w)\nundo(h)", "expected": "['a']"}, {"code": "h = []\nw = [\"a\"]\nsave(h, w)\nw.append(\"b\")\nh", "expected": "[['a']]"}, {"code": "h = []\nsave(h, [\"a\"])\nundo(h)", "expected": "[]"}, {"code": "undo([])", "expected": "[]"}]}]</script>
+<script type="application/json" id="checker">"\"\"\"Judge a solution. test_problems.py and the problems page both use this file.\n\nUsage: python checker.py solution.py < case.json\n\"\"\"\nimport ast\nimport contextlib\nimport io\nimport json\nimport os\nimport sys\nimport tempfile\n\n\n@contextlib.contextmanager\ndef scratch_folder():\n    \"\"\"Run in an empty folder, so problems can create files safely.\"\"\"\n    start = os.getcwd()\n    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as folder:\n        os.chdir(folder)\n        try:\n            yield\n        finally:\n            os.chdir(start)\n\n\ndef describe(exc):\n    \"\"\"Describe an error the way a beginner should read it, with its line.\"\"\"\n    line = exc.lineno if isinstance(exc, SyntaxError) else None\n    tb = exc.__traceback__\n    while tb:\n        if tb.tb_frame.f_code.co_filename == \"solution.py\":\n            line = tb.tb_lineno\n        tb = tb.tb_next\n    return f\"Line {line}: {type(exc).__name__}: {exc}\"\n\n\ndef run_source(source, lines):\n    \"\"\"Run a script, typing `lines` as its input. Return (output, error).\"\"\"\n    typed = iter(lines)\n    output = io.StringIO()\n\n    def fake_input(prompt=\"\"):\n        output.write(str(prompt))\n        try:\n            return next(typed)\n        except StopIteration:\n            raise EOFError(\"the program asked for more input than was given\") from None\n\n    error = None\n    with contextlib.redirect_stdout(output):\n        try:\n            exec(compile(source, \"solution.py\", \"exec\"), {\"__name__\": \"__main__\", \"input\": fake_input})\n        except SystemExit:\n            pass\n        except Exception as exc:\n            error = describe(exc)\n    return output.getvalue(), error\n\n\ndef run_calls(source, code):\n    \"\"\"Load a solution, run `code`, and return the repr of its last line.\"\"\"\n    namespace = {\"__name__\": \"solution\"}\n    with contextlib.redirect_stdout(io.StringIO()):\n        try:\n            exec(compile(source, \"solution.py\", \"exec\"), namespace)\n        except Exception as exc:\n            return \"\", describe(exc)\n        tree = ast.parse(code)\n        last = tree.body.pop()\n        try:\n            exec(compile(tree, \"test\", \"exec\"), namespace)\n            value = eval(compile(ast.Expression(last.value), \"test\", \"eval\"), namespace)\n        except Exception as exc:\n            return f\"raises {type(exc).__name__}\", None\n    return repr(value), None\n\n\ndef run_case(source, case):\n    with scratch_folder():\n        if \"code\" in case:\n            return run_calls(source, case[\"code\"])\n        return run_source(source, case[\"input\"])\n\n\ndef judge(output, expected, match):\n    \"\"\"Compare the end of a script's output, because prompts share its line.\"\"\"\n    text = output.strip()\n    if match == \"exact\":\n        return text == expected\n    if match == \"last\":\n        return text.split()[-1:] == [expected]\n    return text.endswith(expected)\n\n\ndef violations(source, rules):\n    \"\"\"Return the message of each constraint the source breaks.\"\"\"\n    try:\n        nodes = list(ast.walk(ast.parse(source)))\n    except SyntaxError:\n        return []\n    found = []\n    for rule in rules:\n        for node in nodes:\n            is_banned_name = isinstance(node, ast.Name) and node.id in rule.get(\"names\", [])\n            is_banned_attr = isinstance(node, ast.Attribute) and node.attr in rule.get(\"attrs\", [])\n            if type(node).__name__ in rule.get(\"nodes\", []) or is_banned_name or is_banned_attr:\n                found.append(rule[\"message\"])\n                break\n    return found\n\n\ndef check_all(source, problem):\n    \"\"\"Run every test case and return a report for the problems page.\"\"\"\n    results = []\n    for case in problem[\"cases\"]:\n        output, error = run_case(source, case)\n        results.append({\n            **case,\n            \"output\": output,\n            \"error\": error,\n            \"passed\": error is None and judge(output, case[\"expected\"], problem[\"match\"]),\n        })\n    broken = violations(source, problem.get(\"rules\", []))\n    return {\n        \"results\": results,\n        \"violations\": broken,\n        \"passed\": not broken and all(result[\"passed\"] for result in results),\n    }\n\n\ndef handle(request):\n    \"\"\"Answer one JSON request from the problems page.\"\"\"\n    data = json.loads(request)\n    if data[\"action\"] == \"run\":\n        with scratch_folder():\n            output, error = run_source(data[\"source\"], data[\"lines\"])\n        return json.dumps({\"output\": output, \"error\": error})\n    return json.dumps(check_all(data[\"source\"], data[\"problem\"]))\n\n\nif __name__ == \"__main__\":\n    with open(sys.argv[1], encoding=\"utf-8\") as handle_file:\n        code = handle_file.read()\n    print(json.dumps(run_case(code, json.load(sys.stdin))))\n"</script>
+<script>
+const PROBLEMS = JSON.parse(document.getElementById("data").textContent);
+const CHECKER = JSON.parse(document.getElementById("checker").textContent);
+const KEY = "python-unit-8-problems";
+const STARTER = "# Write your code here\n";
+const TIME_LIMIT = 8000;
+const PACKAGE_TIME_LIMIT = 60000;
+const PYODIDE = "https://cdn.jsdelivr.net/pyodide/v0.28.3/full/";
+const $ = (id) => document.getElementById(id);
+
+const WORKER = `
+importScripts("${PYODIDE}pyodide.js");
+let python;
+onmessage = async (event) => {
+  try {
+    if (event.data.checker) {
+      python = await loadPyodide({ indexURL: "${PYODIDE}" });
+      python.runPython(event.data.checker.replace('if __name__ == "__main__":', "if False:"));
+      postMessage({ ready: true });
+      return;
+    }
+    await python.loadPackagesFromImports(JSON.parse(event.data.request).source);
+    python.globals.set("request", event.data.request);
+    postMessage({ reply: python.runPython("handle(request)") });
+  } catch (error) {
+    postMessage({ failed: String(error) });
+  }
+};
+`;
+
+let state = { solved: [], code: {} };
+try { state = Object.assign(state, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+const isSolved = (index) => state.solved.includes(PROBLEMS[index].number);
+const isOpen = (index) => index === 0 || isSolved(index - 1);
+let current = 0;
+while (current < PROBLEMS.length - 1 && isSolved(current)) current += 1;
+
+const editor = window.CodeMirror
+  ? CodeMirror.fromTextArea($("source"), { mode: "python", lineNumbers: true, indentUnit: 4, extraKeys: { Tab: (cm) => cm.replaceSelection("    ") } })
+  : null;
+const getCode = () => (editor ? editor.getValue() : $("source").value);
+const setCode = (code) => { if (editor) editor.setValue(code); else $("source").value = code; };
+function remember() { state.code[PROBLEMS[current].number] = getCode(); save(); }
+if (editor) editor.on("change", remember); else $("source").addEventListener("input", remember);
+
+let worker = null;
+let answer = null;
+function setBusy(busy, text) {
+  $("run").disabled = busy;
+  $("check").disabled = busy;
+  $("status").textContent = text;
+}
+function startWorker() {
+  setBusy(true, "Loading Python, the first time takes a while...");
+  worker = new Worker(URL.createObjectURL(new Blob([WORKER], { type: "text/javascript" })));
+  worker.onerror = () => setBusy(true, "Python couldn't load. Check your connection, then reload the page.");
+  worker.onmessage = (event) => {
+    if (event.data.ready) { setBusy(false, ""); return; }
+    if (event.data.failed) { worker.onerror(); return; }
+    answer(JSON.parse(event.data.reply));
+  };
+  worker.postMessage({ checker: CHECKER });
+}
+function ask(request) {
+  setBusy(true, "Running...");
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => {
+      worker.terminate();
+      startWorker();
+      resolve({ timedOut: true });
+    }, request.source.includes("numpy") ? PACKAGE_TIME_LIMIT : TIME_LIMIT);
+    answer = (reply) => { clearTimeout(timer); setBusy(false, ""); resolve(reply); };
+    worker.postMessage({ request: JSON.stringify(request) });
+  });
+}
+
+function box(kind, heading, parts) {
+  const node = document.createElement("div");
+  node.className = "result " + kind;
+  const title = document.createElement("b");
+  title.textContent = heading;
+  node.append(title, ...parts);
+  $("result").replaceChildren(node);
+  return node;
+}
+function field(label, value) {
+  const name = document.createElement("div");
+  name.className = "detail";
+  name.textContent = label;
+  const text = document.createElement("pre");
+  text.textContent = value;
+  return [name, text];
+}
+const TIMED_OUT = "Your code ran for too long. Look for a loop that never ends.";
+
+$("run").onclick = async () => {
+  const lines = $("lines").value.split("\n").filter((line, i, all) => line !== "" || i < all.length - 1);
+  const reply = await ask({ action: "run", source: getCode(), lines });
+  if (reply.timedOut) { box("fail", "Time limit", [TIMED_OUT]); return; }
+  if (reply.error) box("fail", "Error", [...field("OUTPUT", reply.output || "(nothing)"), ...field("ERROR", reply.error)]);
+  else box("", "Output", field("OUTPUT", reply.output || "(nothing)"));
+};
+
+$("check").onclick = async () => {
+  const index = current;
+  const problem = PROBLEMS[index];
+  const reply = await ask({ action: "check", source: getCode(), problem });
+  if (reply.timedOut) { box("fail", "Time limit", [TIMED_OUT]); return; }
+  const total = reply.results.length;
+  const passed = reply.results.filter((result) => result.passed).length;
+  if (!reply.passed) {
+    const parts = reply.violations.flatMap((message) => field("CONSTRAINT", message));
+    const failure = reply.results.find((result) => !result.passed);
+    if (failure) {
+      const input = failure.code ? ["TEST", failure.code] : ["INPUT", failure.input.join("\n")];
+      parts.push(...field(...input), ...field("EXPECTED", failure.expected));
+      parts.push(...field("YOUR OUTPUT", failure.output || "(nothing)"));
+      if (failure.error) parts.push(...field("ERROR", failure.error));
+    }
+    box("fail", failure ? `${passed} of ${total} tests passed` : "Tests passed, but a constraint is broken", parts);
+    return;
+  }
+  if (!isSolved(index)) { state.solved.push(problem.number); save(); }
+  render();
+  const last = index === PROBLEMS.length - 1;
+  box("pass", `All ${total} tests passed`, [last ? "You finished this unit." : "The next problem is unlocked."]);
+};
+
+$("next").onclick = () => { current += 1; show(); };
+
+function render() {
+  const steps = PROBLEMS.map((problem, index) => {
+    const step = document.createElement("button");
+    step.type = "button";
+    step.className = "step" + (isSolved(index) ? " solved" : "");
+    if (index === current) step.setAttribute("aria-current", "step");
+    step.disabled = !isOpen(index);
+    step.onclick = () => { current = index; show(); };
+    const num = document.createElement("span");
+    num.className = "num";
+    num.textContent = problem.number;
+    const text = document.createElement("span");
+    text.className = "step-text";
+    const name = document.createElement("span");
+    name.textContent = problem.title;
+    const info = document.createElement("small");
+    info.textContent = isOpen(index) ? (isSolved(index) ? "Solved" : problem.level) : "Locked";
+    text.append(name, info);
+    step.append(num, text);
+    return step;
+  });
+  $("steps").replaceChildren(...steps);
+  $("next").disabled = current === PROBLEMS.length - 1 || !isSolved(current);
+}
+function show() {
+  const problem = PROBLEMS[current];
+  $("level").textContent = problem.level;
+  $("level").className = "level " + problem.level.toLowerCase();
+  $("title").textContent = `${problem.number}. ${problem.title}`;
+  $("statement").textContent = problem.text;
+  $("lines").value = (problem.cases[0].input || []).join("\n");
+  $("result").replaceChildren();
+  setCode(state.code[problem.number] || problem.starter || STARTER);
+  render();
+}
+
+show();
+startWorker();
+</script>
+</html>
