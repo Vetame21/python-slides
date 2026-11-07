@@ -1,0 +1,302 @@
+<!doctype html>
+<title>Python Unit 2</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one lesson card per screen. Explanation left, runnable code right. */
+:root {
+  --bg: #eaf0f6; --surface: #f8fafc; --ink: #12263f; --muted: #53677d; --line: #c9d6e3;
+  --accent: #27609f; --sun: #ffd43b; --sun-ink: #2a2100;
+  --code-bg: #12263f; --code-ink: #e6eef7;
+  --good: #14765a; --bad: #b83232; --good-bg: #dcf1e9; --bad-bg: #f9e2e2;
+  --display: "Bricolage Grotesque", "Segoe UI", sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0d1724; --surface: #15212f; --ink: #e4edf6; --muted: #98abbf; --line: #2c3c4f;
+  --accent: #82b6ee; --code-bg: #07101b; --code-ink: #e6eef7;
+  --good: #58cda2; --bad: #f28b8b; --good-bg: #123229; --bad-bg: #3a1c1f; color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #0d1724; --surface: #15212f; --ink: #e4edf6; --muted: #98abbf; --line: #2c3c4f;
+  --accent: #82b6ee; --code-bg: #07101b; --code-ink: #e6eef7;
+  --good: #58cda2; --bad: #f28b8b; --good-bg: #123229; --bad-bg: #3a1c1f; color-scheme: dark;
+}
+html, body { height: 100%; }
+body {
+  background: var(--bg); color: var(--ink); font: 17px/1.55 var(--body);
+  display: flex; flex-direction: column; gap: 12px; box-sizing: border-box;
+  padding-block: 14px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+header, main, footer { width: 100%; max-width: 1080px; margin-inline: auto; box-sizing: border-box; }
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.unit { font: 800 18px/1.2 var(--display); flex: 1 1 200px; min-width: 0; }
+.unit small { display: block; font: 400 13px/1.3 var(--body); color: var(--muted); }
+.home { font-size: 14px; color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.lang { display: flex; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.lang button { background: none; border: 0; padding: 4px 12px; font-weight: 700; font-size: 14px; }
+.lang button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.steps { display: flex; gap: 4px; width: 100%; }
+.steps button { flex: 1; height: 12px; min-width: 0; padding: 0; border: 0; border-radius: 2px; background: var(--line); }
+.steps button.seen { background: var(--accent); }
+.steps button.good { background: var(--good); }
+.steps button.bad { background: var(--bad); }
+.steps button.now { outline: 2px solid var(--sun); outline-offset: 1px; }
+main { flex: 1; min-height: 0; overflow-y: auto; }
+.slide { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 28px; padding-block: 12px; }
+.slide.solo { grid-template-columns: minmax(0, 1fr); max-width: 680px; }
+.col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.tag { align-self: flex-start; font: 600 12px/1 var(--mono); letter-spacing: .08em; padding: 5px 8px; background: var(--sun); color: var(--sun-ink); }
+h1 { font: 800 clamp(28px, 4.2vw, 42px)/1.08 var(--display); margin: 0; text-wrap: balance; }
+p { margin: 0; max-width: 65ch; }
+.explain { border-top: 1px solid var(--line); padding-top: 12px; color: var(--muted); }
+.added { font: 600 12px var(--mono); background: var(--sun); color: var(--sun-ink); padding: 1px 5px; }
+.label { font: 600 12px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+pre { margin: 0; padding: 12px 14px; background: var(--code-bg); color: var(--code-ink); font: 400 15px/1.5 var(--mono); font-variant-ligatures: none; overflow-x: auto; white-space: pre; }
+pre.out { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
+.typed { font-size: 14px; color: var(--muted); }
+.pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+.pair > div { min-width: 0; }
+.verdict { font: 600 13px var(--mono); padding: 6px 14px; word-break: break-word; }
+.wrong .verdict { background: var(--bad-bg); color: var(--bad); }
+.right .verdict { background: var(--good-bg); color: var(--good); }
+.check { background: var(--surface); border: 1px solid var(--line); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.check .q { font-weight: 700; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { background: var(--surface); border: 1px solid var(--ink); padding: 7px 14px; font-weight: 700; font-size: 15px; align-self: flex-start; text-decoration: none; }
+.btn.main { background: var(--ink); color: var(--bg); }
+.btn.on-good { background: var(--good); border-color: var(--good); color: var(--bg); }
+.btn.on-bad { background: var(--bad); border-color: var(--bad); color: var(--bg); }
+.btn:disabled { opacity: .4; cursor: default; }
+.src { font-size: 13px; color: var(--muted); }
+.src a { color: var(--accent); }
+footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.count { font: 400 14px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.score { font: 800 64px/1 var(--display); }
+@media (max-width: 760px) { .slide { grid-template-columns: minmax(0, 1fr); gap: 18px; } body { font-size: 16px; } }
+</style>
+
+<header>
+  <a class="home" id="home" href="../" hidden></a>
+  <div class="unit" id="unit"></div>
+  <div class="lang" role="group" aria-label="Language">
+    <button id="lang-en" type="button">EN</button>
+    <button id="lang-id" type="button">ID</button>
+  </div>
+  <nav class="steps" id="steps" aria-label="Slides"></nav>
+</header>
+<main id="main" tabindex="-1"></main>
+<footer>
+  <button class="btn" id="prev" type="button"></button>
+  <span class="count" id="count"></span>
+  <button class="btn main" id="next" type="button"></button>
+</footer>
+
+<script type="application/json" id="data">[{"chapter": "Unit 2. Conditionals", "title": "Comparisons give True or False", "tag": "WHAT", "body": "Python compares with ==, !=, <, <=, > and >=. Each comparison gives a bool: True or False. == asks a question, while = stores a value.", "code": "print(3 < 5)\nprint(3 == 5)\nprint(3 != 5)", "output": "True\nFalse\nTrue", "wrong_right": {"wrong": "x = 5\nif x = 5:\n    print(\"five\")", "wrong_result": "SyntaxError", "right": "x = 5\nif x == 5:\n    print(\"five\")", "right_result": "five", "reason": "Inside an if, = is an error. Use == to compare."}, "quick_check": {"q": "What is 3 != 5?", "a": "True, because 3 is not equal to 5."}, "sources": [{"label": "CS50P Week 1 notes", "url": "https://cs50.harvard.edu/python/notes/1/"}, {"label": "W3Schools: conditions", "url": "https://www.w3schools.com/python/python_conditions.asp"}, {"label": "Python docs: truth, booleans and comparisons", "url": "https://docs.python.org/3.13/library/stdtypes.html"}], "id": {"chapter": "Unit 2. Percabangan", "title": "Perbandingan menghasilkan True atau False", "body": "Python membandingkan dengan ==, !=, <, <=, > dan >=. Setiap perbandingan menghasilkan bool: True atau False. == bertanya, sedangkan = menyimpan nilai.", "wrong_right_reason": "Di dalam if, = adalah error. Pakai == untuk membandingkan.", "quick_check": {"q": "Apa hasil 3 != 5?", "a": "True, karena 3 tidak sama dengan 5."}}}, {"chapter": "Unit 2. Conditionals", "title": "if runs a block only when True", "tag": "HOW", "body": "An if checks a condition. When it's True, the indented block under it runs. When it's False, Python skips the block. The indent marks which lines belong to the if.", "code": "x = 7\nif x > 5:\n    print(\"big\")\nprint(\"done\")", "output": "big\ndone", "wrong_right": {"wrong": "x = 7\nif x > 5:\nprint(\"big\")", "wrong_result": "IndentationError", "right": "x = 7\nif x > 5:\n    print(\"big\")", "right_result": "big", "reason": "The line after an if must be indented, or Python can't tell what belongs to it."}, "quick_check": {"q": "x = 3. Does the print inside if x > 5: run?", "a": "No. 3 > 5 is False, so the block is skipped."}, "sources": [{"label": "CS50P Week 1 notes", "url": "https://cs50.harvard.edu/python/notes/1/"}, {"label": "W3Schools: conditions", "url": "https://www.w3schools.com/python/python_conditions.asp"}, {"label": "Python tutorial: control flow", "url": "https://docs.python.org/3.13/tutorial/controlflow.html"}], "id": {"chapter": "Unit 2. Percabangan", "title": "if menjalankan blok hanya saat True", "body": "if memeriksa sebuah kondisi. Saat True, blok yang menjorok di bawahnya dijalankan. Saat False, Python melewati blok itu. Indentasi menandai baris mana milik if.", "wrong_right_reason": "Baris setelah if harus menjorok, kalau tidak Python tidak tahu blok if-nya.", "quick_check": {"q": "x = 3. Apakah print di dalam if x > 5: berjalan?", "a": "Tidak. 3 > 5 bernilai False, jadi bloknya dilewati."}}}, {"chapter": "Unit 2. Conditionals", "title": "else catches everything else", "tag": "HOW", "body": "else runs when the if condition is False. It never has a condition of its own. Exactly one of the two blocks runs.", "code": "temp = 15\nif temp >= 25:\n    print(\"warm\")\nelse:\n    print(\"cold\")", "output": "cold", "quick_check": {"q": "How many blocks run in an if and else?", "a": "Exactly one."}, "sources": [{"label": "CS50P Week 1 notes", "url": "https://cs50.harvard.edu/python/notes/1/"}, {"label": "GeeksforGeeks: if else", "url": "https://www.geeksforgeeks.org/python/python-if-else/"}, {"label": "Python tutorial: control flow", "url": "https://docs.python.org/3.13/tutorial/controlflow.html"}], "id": {"chapter": "Unit 2. Percabangan", "title": "else menangkap sisanya", "body": "else berjalan saat kondisi if bernilai False. else tidak punya kondisi sendiri. Tepat satu dari dua blok yang berjalan.", "quick_check": {"q": "Berapa blok yang berjalan pada if dan else?", "a": "Tepat satu."}}}, {"chapter": "Unit 2. Conditionals", "title": "elif stops at the first True", "tag": "WHY", "body": "Separate if statements check every condition, so several blocks can run. In an if, elif and else chain, Python stops at the first True condition and skips the rest.", "explain": "elif is also faster, because Python doesn't ask questions it no longer needs.", "wrong_right": {"wrong": "score = 95\nif score >= 90:\n    print(\"A\")\nif score >= 80:\n    print(\"B\")", "wrong_result": "A\nB", "right": "score = 95\nif score >= 90:\n    print(\"A\")\nelif score >= 80:\n    print(\"B\")", "right_result": "A", "reason": "Separate ifs check every condition."}, "quick_check": {"q": "Score 95, an if/elif chain: >= 90 then >= 80. How many lines print?", "a": "One: A."}, "sources": [{"label": "CS50P Week 1 notes", "url": "https://cs50.harvard.edu/python/notes/1/"}, {"label": "GeeksforGeeks: if else", "url": "https://www.geeksforgeeks.org/python/python-if-else/"}, {"label": "Python tutorial: control flow", "url": "https://docs.python.org/3.13/tutorial/controlflow.html"}], "id": {"chapter": "Unit 2. Percabangan", "title": "elif berhenti di True pertama", "body": "if yang terpisah memeriksa setiap kondisi, jadi beberapa blok bisa berjalan. Pada rangkaian if, elif dan else, Python berhenti di kondisi True pertama dan melewati sisanya.", "explain": "elif juga lebih cepat, karena Python tidak menanyakan hal yang tidak perlu.", "wrong_right_reason": "if yang terpisah memeriksa setiap kondisi.", "quick_check": {"q": "Skor 95, rangkaian if/elif: >= 90 lalu >= 80. Berapa yang tercetak?", "a": "Satu, yaitu A."}}}, {"chapter": "Unit 2. Conditionals", "title": "The order of elif matters", "tag": "REMEMBER", "body": "Because Python stops at the first True condition, put the strictest check first. For grades, check 90 before 80 before 70.", "wrong_right": {"wrong": "score = 95\nif score >= 60:\n    print(\"D\")\nelif score >= 90:\n    print(\"A\")", "wrong_result": "D", "right": "score = 95\nif score >= 90:\n    print(\"A\")\nelif score >= 60:\n    print(\"D\")", "right_result": "A", "reason": "95 >= 60 is True, so the first check wins."}, "quick_check": {"q": "Why must >= 60 not come first?", "a": "Almost every score passes it, so the later checks never run."}, "sources": [{"label": "CS50P Week 1 notes", "url": "https://cs50.harvard.edu/python/notes/1/"}, {"label": "GeeksforGeeks: if else", "url": "https://www.geeksforgeeks.org/python/python-if-else/"}], "id": {"chapter": "Unit 2. Percabangan", "title": "Urutan elif itu penting", "body": "Karena Python berhenti di kondisi True pertama, taruh pengecekan paling ketat di awal. Untuk nilai, cek 90 sebelum 80 sebelum 70.", "wrong_right_reason": "95 >= 60 bernilai True, jadi pengecekan pertama sudah menang.", "quick_check": {"q": "Kenapa >= 60 tidak boleh di urutan pertama?", "a": "Karena hampir semua skor lolos, jadi pengecekan berikutnya tidak pernah jalan."}}}, {"chapter": "Unit 2. Conditionals", "title": "and, or and not", "tag": "WHAT", "body": "and is True only when both sides are True. or is True when at least one side is True. not flips True and False.", "code": "age = 20\nprint(age >= 18 and age < 60)\nprint(age < 13 or age > 65)\nprint(not age > 18)", "output": "True\nFalse\nFalse", "explain": "not is weaker than comparisons, so not age > 18 means not (age > 18).", "quick_check": {"q": "age = 20. What is age < 13 or age > 65?", "a": "False, because both sides are False."}, "sources": [{"label": "CS50P Week 1 notes", "url": "https://cs50.harvard.edu/python/notes/1/"}, {"label": "GeeksforGeeks: if else", "url": "https://www.geeksforgeeks.org/python/python-if-else/"}, {"label": "Python docs: truth, booleans and comparisons", "url": "https://docs.python.org/3.13/library/stdtypes.html"}], "id": {"chapter": "Unit 2. Percabangan", "title": "and, or dan not", "body": "and bernilai True hanya jika kedua sisi True. or bernilai True jika minimal satu sisi True. not membalik True dan False.", "explain": "not lebih lemah dari perbandingan, jadi not age > 18 artinya not (age > 18).", "quick_check": {"q": "age = 20. Apa hasil age < 13 or age > 65?", "a": "False, karena kedua sisi False."}}}, {"chapter": "Unit 2. Conditionals", "title": "and runs before or", "tag": "REMEMBER", "body": "Like * before +, Python does not first, then and, then or. When a condition mixes and with or, add parentheses so you and the reader know the order.", "code": "print(True or False and False)\nprint((True or False) and False)", "output": "True\nFalse", "explain": "The first line means True or (False and False), so it's True.", "quick_check": {"q": "What is True or True and False?", "a": "True. and goes first: True and False is False, then True or False is True."}, "sources": [{"label": "Python docs: expressions", "url": "https://docs.python.org/3.13/reference/expressions.html"}, {"label": "Python docs: truth, booleans and comparisons", "url": "https://docs.python.org/3.13/library/stdtypes.html"}], "id": {"chapter": "Unit 2. Percabangan", "title": "and dijalankan sebelum or", "body": "Seperti * sebelum +, Python menjalankan not dulu, lalu and, lalu or. Saat kondisi mencampur and dan or, tambahkan tanda kurung agar urutannya jelas.", "explain": "Baris pertama artinya True or (False and False), jadi hasilnya True.", "quick_check": {"q": "Apa hasil True or True and False?", "a": "True. and dulu: True and False adalah False, lalu True or False adalah True."}}}, {"chapter": "Unit 2. Conditionals", "title": "Chain comparisons", "tag": "HOW", "body": "Python lets you write 90 <= score <= 100 instead of using and. It means the same as both comparisons joined with and, and few other languages allow it.", "code": "score = 95\nprint(90 <= score <= 100)\nprint(1 < 5 < 3)", "output": "True\nFalse", "explain": "1 < 5 < 3 means 1 < 5 and 5 < 3, so it's False.", "quick_check": {"q": "What is 1 < 2 < 2?", "a": "False, because 2 < 2 is False."}, "sources": [{"label": "CS50P Week 1 notes", "url": "https://cs50.harvard.edu/python/notes/1/"}, {"label": "Python docs: truth, booleans and comparisons", "url": "https://docs.python.org/3.13/library/stdtypes.html"}], "id": {"chapter": "Unit 2. Percabangan", "title": "Rangkai perbandingan", "body": "Python membolehkan 90 <= score <= 100 tanpa and. Artinya sama dengan dua perbandingan yang digabung dengan and, dan sedikit bahasa lain yang mengizinkannya.", "explain": "1 < 5 < 3 artinya 1 < 5 and 5 < 3, jadi hasilnya False.", "quick_check": {"q": "Apa hasil 1 < 2 < 2?", "a": "False, karena 2 < 2 bernilai False."}}}, {"chapter": "Unit 2. Conditionals", "title": "Values can be True or False too", "tag": "WHAT", "body": "An if works with any value, not just comparisons. 0, empty text, None and empty collections count as False. Almost everything else counts as True.", "code": "print(bool(0), bool(\"\"), bool(\"False\"), bool([]), bool([0]))", "output": "False False True False True", "explain": "The text \"False\" isn't empty, so it counts as True.", "quick_check": {"q": "Does if \"0\": run its block?", "a": "Yes. \"0\" is text that isn't empty, so it's True."}, "sources": [{"label": "W3Schools: conditions", "url": "https://www.w3schools.com/python/python_conditions.asp"}, {"label": "Python docs: truth, booleans and comparisons", "url": "https://docs.python.org/3.13/library/stdtypes.html"}], "id": {"chapter": "Unit 2. Percabangan", "title": "Nilai juga bisa True atau False", "body": "if bekerja dengan nilai apa pun, bukan hanya perbandingan. 0, teks kosong, None dan koleksi kosong dianggap False. Hampir semua yang lain dianggap True.", "explain": "Teks \"False\" tidak kosong, jadi dianggap True.", "quick_check": {"q": "Apakah if \"0\": menjalankan bloknya?", "a": "Ya. \"0\" adalah teks yang tidak kosong, jadi True."}}}, {"chapter": "Unit 2. Conditionals", "title": "Choose a value in one line", "tag": "HOW", "body": "value_if_true if condition else value_if_false picks one of two values. It's handy for short choices, like labelling a number even or odd with %.", "code": "n = 7\nlabel = \"even\" if n % 2 == 0 else \"odd\"\nprint(label)", "output": "odd", "explain": "Python checks the condition first, then works out only the value it picked.", "quick_check": {"q": "What is \"yes\" if 3 > 5 else \"no\"?", "a": "\"no\""}, "sources": [{"label": "CS50P Week 1 notes", "url": "https://cs50.harvard.edu/python/notes/1/"}, {"label": "GeeksforGeeks: if else", "url": "https://www.geeksforgeeks.org/python/python-if-else/"}, {"label": "Python docs: expressions", "url": "https://docs.python.org/3.13/reference/expressions.html"}], "id": {"chapter": "Unit 2. Percabangan", "title": "Pilih nilai dalam satu baris", "body": "nilai_jika_true if kondisi else nilai_jika_false memilih salah satu dari dua nilai. Ini praktis untuk pilihan pendek, seperti memberi label genap atau ganjil dengan %.", "explain": "Python mengecek kondisi dulu, lalu hanya menghitung nilai yang dipilih.", "quick_check": {"q": "Apa hasil \"yes\" if 3 > 5 else \"no\"?", "a": "\"no\""}}}]</script>
+<script>
+const SLIDES = JSON.parse(document.getElementById("data").textContent);
+const UNIT = 2;
+const KEY = "python-unit-" + UNIT;
+const UI = {
+  en: { prev: "Back", next: "Next", finish: "Finish", show: "Show answer", got: "I got it", miss: "Review this",
+        code: "Code", output: "Output", typed: "Typed:", wrong: "Wrong", right: "Right", check: "Quick check",
+        result: "Result:", sources: "Sources:", done: "Unit finished", correct: "quick checks correct",
+        review: "Review these slides:", none: "Nothing to review. Nice work.",
+        nextStep: "Next, solve this unit's problems.", again: "Start over", home: "All units", problems: "Open the problems" },
+  id: { prev: "Kembali", next: "Lanjut", finish: "Selesai", show: "Lihat jawaban", got: "Aku paham", miss: "Ulangi ini",
+        code: "Kode", output: "Hasil", typed: "Diketik:", wrong: "Salah", right: "Benar", check: "Cek cepat",
+        result: "Hasil:", sources: "Sumber:", done: "Unit selesai", correct: "cek cepat benar",
+        review: "Ulangi slide ini:", none: "Tidak ada yang perlu diulang. Mantap.",
+        nextStep: "Sekarang kerjakan soal unit ini.", again: "Mulai lagi", home: "Semua unit", problems: "Buka soal" }
+};
+
+let state = { at: 0, lang: "en", marks: {} };
+try { state = Object.assign(state, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
+const shown = {};
+if (!(state.at >= 0 && state.at <= SLIDES.length)) state.at = 0;
+
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+function ui(name) { return UI[state.lang][name]; }
+function text(slide, field) {
+  return state.lang === "id" ? slide.id[field] : slide[field];
+}
+function el(tag, cls, content) {
+  const node = document.createElement(tag);
+  if (cls) node.className = cls;
+  if (content !== undefined) node.textContent = content;
+  return node;
+}
+function para(value, cls) {
+  const node = el("p", cls);
+  const parts = value.split("[ADDED]");
+  parts.forEach((part, index) => {
+    if (index) node.append(el("span", "added", "ADDED"));
+    node.append(part);
+  });
+  return node;
+}
+function block(label, code, cls) {
+  const box = el("div");
+  box.append(el("div", "label", label), el("pre", cls, code));
+  return box;
+}
+function pairSide(kind, code, result) {
+  const box = el("div", kind);
+  const pre = el("pre", "", code);
+  pre.tabIndex = 0;
+  box.append(el("div", "label", ui(kind)), pre, el("div", "verdict", ui("result") + " " + result));
+  return box;
+}
+
+function quickCheck(slide, index) {
+  const box = el("div", "check");
+  const qc = text(slide, "quick_check");
+  box.append(el("div", "label", ui("check")), el("div", "q", qc.q));
+  if (!shown[index] && !state.marks[index]) {
+    const show = el("button", "btn", ui("show"));
+    show.type = "button";
+    show.onclick = () => { shown[index] = true; render(); };
+    box.append(show);
+    return box;
+  }
+  box.append(el("p", "", qc.a));
+  const row = el("div", "row");
+  [["got", "good", "on-good"], ["miss", "bad", "on-bad"]].forEach(([word, mark, cls]) => {
+    const pick = el("button", "btn" + (state.marks[index] === mark ? " " + cls : ""), ui(word));
+    pick.type = "button";
+    pick.setAttribute("aria-pressed", String(state.marks[index] === mark));
+    pick.onclick = () => { state.marks[index] = mark; save(); render(); };
+    row.append(pick);
+  });
+  box.append(row);
+  return box;
+}
+
+function slideView(slide, index) {
+  const hasCode = slide.code || slide.wrong_right;
+  const page = el("article", "slide" + (hasCode ? "" : " solo"));
+  const left = el("div", "col");
+  left.append(el("span", "tag", slide.tag), el("h1", "", text(slide, "title")), para(text(slide, "body")));
+  if (slide.explain) left.append(para(text(slide, "explain"), "explain"));
+  left.append(quickCheck(slide, index));
+  const src = el("p", "src", ui("sources") + " ");
+  slide.sources.forEach((source, at) => {
+    const link = el("a", "", source.label);
+    link.href = source.url;
+    link.target = "_blank";
+    link.rel = "noopener";
+    if (at) src.append(", ");
+    src.append(link);
+  });
+  left.append(src);
+  page.append(left);
+  if (!hasCode) return page;
+
+  const right = el("div", "col");
+  if (slide.code) {
+    right.append(block(ui("code"), slide.code), block(ui("output"), slide.output, "out"));
+  }
+  if (slide.input) right.append(el("div", "typed", ui("typed") + " " + slide.input.join(", ")));
+  const pair = slide.wrong_right;
+  if (pair) {
+    const both = el("div", "pair");
+    both.append(pairSide("wrong", pair.wrong, pair.wrong_result), pairSide("right", pair.right, pair.right_result));
+    right.append(both, el("p", "", state.lang === "id" ? slide.id.wrong_right_reason : pair.reason));
+  }
+  page.append(right);
+  return page;
+}
+
+function endView() {
+  const page = el("article", "slide solo");
+  const col = el("div", "col");
+  const good = SLIDES.filter((_, index) => state.marks[index] === "good").length;
+  col.append(el("h1", "", ui("done")), el("div", "score", good + " / " + SLIDES.length), el("p", "", ui("correct")));
+  const missed = SLIDES.map((slide, index) => [slide, index]).filter(([, index]) => state.marks[index] !== "good");
+  if (!missed.length) col.append(el("p", "", ui("none")));
+  else {
+    col.append(el("p", "", ui("review")));
+    const row = el("div", "row");
+    missed.forEach(([slide, index]) => {
+      const jump = el("button", "btn", (index + 1) + ". " + text(slide, "title"));
+      jump.type = "button";
+      jump.onclick = () => go(index);
+      row.append(jump);
+    });
+    col.append(row);
+  }
+  col.append(el("p", "", ui("nextStep")));
+  const problems = el("a", "btn main", ui("problems"));
+  problems.href = "problems.html";
+  col.append(problems);
+  const again = el("button", "btn", ui("again"));
+  again.type = "button";
+  again.onclick = () => {
+    state.marks = {};
+    Object.keys(shown).forEach((key) => delete shown[key]);
+    go(0);
+  };
+  col.append(again);
+  page.append(col);
+  return page;
+}
+
+function render() {
+  const at = state.at;
+  document.documentElement.lang = state.lang;
+  const home = document.getElementById("home");
+  home.textContent = ui("home");
+  home.hidden = !location.protocol.startsWith("http");
+  const unit = document.getElementById("unit");
+  unit.textContent = "Python";
+  unit.append(el("small", "", text(SLIDES[0], "chapter")));
+  ["en", "id"].forEach((code) => {
+    const btn = document.getElementById("lang-" + code);
+    btn.setAttribute("aria-pressed", String(state.lang === code));
+    btn.onclick = () => { state.lang = code; save(); render(); };
+  });
+  const steps = document.getElementById("steps");
+  steps.replaceChildren();
+  SLIDES.forEach((slide, index) => {
+    const step = el("button");
+    step.type = "button";
+    step.setAttribute("aria-label", (index + 1) + ". " + text(slide, "title"));
+    step.title = text(slide, "title");
+    const mark = state.marks[index];
+    step.className = (mark || (index < at ? "seen" : "")) + (index === at ? " now" : "");
+    step.onclick = () => go(index);
+    steps.append(step);
+  });
+  const main = document.getElementById("main");
+  main.replaceChildren(at < SLIDES.length ? slideView(SLIDES[at], at) : endView());
+  const prev = document.getElementById("prev");
+  const next = document.getElementById("next");
+  prev.textContent = ui("prev");
+  prev.disabled = at === 0;
+  next.textContent = at === SLIDES.length - 1 ? ui("finish") : ui("next");
+  next.hidden = at === SLIDES.length;
+  document.getElementById("count").textContent = at < SLIDES.length ? (at + 1) + " / " + SLIDES.length : "";
+}
+
+function go(index) {
+  state.at = Math.max(0, Math.min(SLIDES.length, index));
+  save();
+  render();
+  document.getElementById("main").scrollTop = 0;
+}
+document.getElementById("prev").onclick = () => go(state.at - 1);
+document.getElementById("next").onclick = () => go(state.at + 1);
+document.addEventListener("keydown", (event) => {
+  if (event.key === "ArrowRight") go(state.at + 1);
+  if (event.key === "ArrowLeft") go(state.at - 1);
+});
+render();
+</script>
